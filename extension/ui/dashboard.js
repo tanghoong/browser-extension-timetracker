@@ -90,9 +90,9 @@ function updateSiteFilter(sites) {
   const filter = document.getElementById('siteFilter');
   const currentValue = filter.value;
   
-  // Clear all options except the first one
+  // Clear all options except the first one (All Sites)
   while (filter.options.length > 1) {
-    filter.remove(1);
+    filter.options.remove(1);
   }
   
   // Add sites sorted by time
@@ -106,7 +106,10 @@ function updateSiteFilter(sites) {
     filter.appendChild(option);
   }
   
-  filter.value = currentValue;
+  // Restore previous selection if still valid
+  if (currentValue && Array.from(filter.options).some(opt => opt.value === currentValue)) {
+    filter.value = currentValue;
+  }
 }
 
 async function loadCurrentSession() {
