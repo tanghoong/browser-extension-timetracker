@@ -4,7 +4,7 @@
  */
 
 import { STORAGE_KEYS, DEFAULT_SETTINGS, ERROR_MESSAGES } from '../lib/constants.js';
-import { getDateKey, getDateKeysForPeriod } from '../lib/utils.js';
+import { getDateKey, getDateKeysForPeriod, escapeCSV } from '../lib/utils.js';
 
 /**
  * Get settings from storage
@@ -211,7 +211,8 @@ export async function exportCSV(period, siteKey = null) {
           const seconds = data.seconds || 0;
           const minutes = Math.round(seconds / 60);
           const visits = data.visits || 0;
-          csv += `${dateKey},${site},${seconds},${minutes},${visits}\n`;
+          // Use escapeCSV to prevent CSV injection
+          csv += `${escapeCSV(dateKey)},${escapeCSV(site)},${seconds},${minutes},${visits}\n`;
         }
       }
     }
@@ -219,7 +220,8 @@ export async function exportCSV(period, siteKey = null) {
     // Single site export
     for (const row of series) {
       const minutes = Math.round(row.seconds / 60);
-      csv += `${row.date},${siteKey},${row.seconds},${minutes},${row.visits}\n`;
+      // Use escapeCSV to prevent CSV injection
+      csv += `${escapeCSV(row.date)},${escapeCSV(siteKey)},${row.seconds},${minutes},${row.visits}\n`;
     }
   }
   

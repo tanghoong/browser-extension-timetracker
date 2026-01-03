@@ -165,6 +165,29 @@ export function getETLDPlusOne(hostname) {
 }
 
 /**
+ * Escape a value for safe use in CSV
+ * Prevents CSV injection attacks
+ * @param {string} value - Value to escape
+ * @returns {string} Escaped value
+ */
+export function escapeCSV(value) {
+  if (value == null) return '';
+  
+  const str = String(value);
+  
+  // Remove potentially dangerous characters that could trigger formula execution
+  // Excel/LibreOffice treat cells starting with =, +, -, @ as formulas
+  const sanitized = str.replace(/^[=+\-@]/, '\'');
+  
+  // If contains comma, quote, or newline, wrap in quotes and escape internal quotes
+  if (sanitized.includes(',') || sanitized.includes('"') || sanitized.includes('\n')) {
+    return `"${sanitized.replace(/"/g, '""')}"`;
+  }
+  
+  return sanitized;
+}
+
+/**
  * Generate a unique ID
  * @returns {string} Unique ID
  */
