@@ -90,8 +90,10 @@ function updateSiteFilter(sites) {
   const filter = document.getElementById('siteFilter');
   const currentValue = filter.value;
   
-  // Keep first option (All Sites)
-  filter.innerHTML = '<option value="">All Sites</option>';
+  // Clear all options except the first one
+  while (filter.options.length > 1) {
+    filter.remove(1);
+  }
   
   // Add sites sorted by time
   const siteList = Object.entries(sites)

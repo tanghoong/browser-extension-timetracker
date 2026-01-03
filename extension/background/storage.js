@@ -211,8 +211,8 @@ export async function exportCSV(period, siteKey = null) {
           const seconds = data.seconds || 0;
           const minutes = Math.round(seconds / 60);
           const visits = data.visits || 0;
-          // Use escapeCSV to prevent CSV injection
-          csv += `${escapeCSV(dateKey)},${escapeCSV(site)},${seconds},${minutes},${visits}\n`;
+          // Use escapeCSV to prevent CSV injection on all fields
+          csv += `${escapeCSV(dateKey)},${escapeCSV(site)},${escapeCSV(seconds)},${escapeCSV(minutes)},${escapeCSV(visits)}\n`;
         }
       }
     }
@@ -220,8 +220,8 @@ export async function exportCSV(period, siteKey = null) {
     // Single site export
     for (const row of series) {
       const minutes = Math.round(row.seconds / 60);
-      // Use escapeCSV to prevent CSV injection
-      csv += `${escapeCSV(row.date)},${escapeCSV(siteKey)},${row.seconds},${minutes},${row.visits}\n`;
+      // Use escapeCSV to prevent CSV injection on all fields
+      csv += `${escapeCSV(row.date)},${escapeCSV(siteKey)},${escapeCSV(row.seconds)},${escapeCSV(minutes)},${escapeCSV(row.visits)}\n`;
     }
   }
   

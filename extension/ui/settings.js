@@ -42,7 +42,12 @@ function displaySites() {
   const container = document.getElementById('sitesList');
   
   if (allSites.length === 0) {
-    container.innerHTML = '<p class="empty">No sites visited yet. Browse some websites to see them here.</p>';
+    // Safely create empty message element
+    container.innerHTML = '';
+    const emptyMsg = document.createElement('p');
+    emptyMsg.className = 'empty';
+    emptyMsg.textContent = 'No sites visited yet. Browse some websites to see them here.';
+    container.appendChild(emptyMsg);
     return;
   }
   

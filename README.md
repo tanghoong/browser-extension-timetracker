@@ -112,13 +112,14 @@ We take privacy seriously:
    - Time is counted only when tab is active and you're not idle
 
 3. **View your stats:**
-   - Click the extension icon to open the dashboard
+   - Click the extension icon to open the sidebar
+   - The sidebar displays your dashboard with time and visit statistics
    - See your time and visits for different periods
    - Use the period selector to change timeframes
    - Filter by specific sites or view all together
 
 4. **Optional - Exclude specific sites:**
-   - Go to Settings
+   - Go to Settings in the sidebar
    - Find the site you want to exclude
    - Click "Exclude" to stop tracking that domain
 
@@ -140,7 +141,7 @@ We take privacy seriously:
 
 ### Setting Time Limits
 
-1. Go to Settings → Notifications
+1. Go to Settings (in the sidebar) → Notifications
 2. Enable notifications
 3. Set per-site limits (e.g., "Alert me after 2 hours on YouTube")
 4. Or set global limit for all tracked sites combined
@@ -148,7 +149,7 @@ We take privacy seriously:
 
 ### Exporting Data
 
-1. Open the dashboard
+1. Open the sidebar
 2. Select the time period you want to export
 3. (Optional) Filter to a specific site
 4. Click "Export CSV"

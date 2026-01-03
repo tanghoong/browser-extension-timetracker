@@ -177,7 +177,8 @@ export function escapeCSV(value) {
   
   // Remove potentially dangerous characters that could trigger formula execution
   // Excel/LibreOffice treat cells starting with =, +, -, @ as formulas
-  const sanitized = str.replace(/^[=+\-@]/, '\'');
+  // Prefix with single quote to prevent formula execution
+  const sanitized = str.replace(/^[=+\-@]/, '\'$&');
   
   // If contains comma, quote, or newline, wrap in quotes and escape internal quotes
   if (sanitized.includes(',') || sanitized.includes('"') || sanitized.includes('\n')) {
