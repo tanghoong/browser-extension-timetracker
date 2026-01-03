@@ -4,6 +4,7 @@
   border-bottom: 1px solid #ddd;
   text-align: center;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .current-session.active {
@@ -13,9 +14,10 @@
 
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 16px;
   padding: 20px;
+  flex-shrink: 0;
 }
 
 .card {
@@ -50,11 +52,14 @@
   gap: 12px;
   padding: 0 20px 16px;
   align-items: center;
+  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .period-selector {
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
 .period-btn {
@@ -72,11 +77,14 @@
 
 #siteFilter {
   flex: 1;
+  min-width: 150px;
 }
 
 .chart-container {
   padding: 20px;
   padding-top: 0;
+  flex: 1;
+  overflow-y: auto;
 }
 
 #chart {

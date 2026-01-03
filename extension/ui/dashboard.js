@@ -1,5 +1,5 @@
-import { MESSAGE_TYPES, TIME_PERIODS } from '../lib/constants.js';
-import { formatTime, formatTimeHMS } from '../lib/utils.js';
+import { MESSAGE_TYPES } from '../lib/constants.js';
+import { formatTime } from '../lib/utils.js';
 
 let currentPeriod = 'day';
 let currentSite = null;
@@ -47,11 +47,10 @@ function setupEventListeners() {
 async function loadData() {
   try {
     // Get summary for all periods
-    const [dayData, weekData, monthData, periodData] = await Promise.all([
+    const [dayData, weekData, monthData] = await Promise.all([
       sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: 'day' }),
       sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: 'week' }),
-      sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: 'month' }),
-      sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: currentPeriod, siteKey: currentSite })
+      sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: 'month' })
     ]);
     
     // Update summary cards - response format is { summary: { sites: {...} } }

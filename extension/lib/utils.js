@@ -3,11 +3,8 @@
  */
 
 import {
-  MS_PER_SECOND,
   SECONDS_PER_MINUTE,
   MINUTES_PER_HOUR,
-  HOURS_PER_DAY,
-  DAYS_PER_WEEK,
 } from './constants.js';
 
 /**
@@ -112,13 +109,14 @@ export function getDateKeysForPeriod(period, endDate = new Date()) {
     }
     break;
       
-  case 'quarter':
+  case 'quarter': {
     const quarterStart = Math.floor(end.getMonth() / 3) * 3;
     start.setMonth(quarterStart, 1);
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       keys.push(getDateKey(new Date(d)));
     }
     break;
+  }
       
   case 'year':
     start.setMonth(0, 1);

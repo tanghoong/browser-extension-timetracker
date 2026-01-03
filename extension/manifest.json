@@ -8,20 +8,18 @@
     "tabs",
     "notifications",
     "idle",
-    "alarms"
+    "alarms",
+    "sidePanel"
   ],
   "background": {
     "service_worker": "background/tracker.js",
     "type": "module"
   },
   "action": {
-    "default_popup": "ui/dashboard.html",
-    "default_title": "Time Tracker",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
+    "default_title": "Time Tracker"
+  },
+  "side_panel": {
+    "default_path": "ui/dashboard.html"
   },
   "icons": {
     "16": "icons/icon16.png",
