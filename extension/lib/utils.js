@@ -94,38 +94,38 @@ export function getDateKeysForPeriod(period, endDate = new Date()) {
   let start = new Date(end);
   
   switch (period) {
-    case 'day':
-      keys.push(getDateKey(end));
-      break;
+  case 'day':
+    keys.push(getDateKey(end));
+    break;
       
-    case 'week':
-      start.setDate(end.getDate() - 6);
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        keys.push(getDateKey(new Date(d)));
-      }
-      break;
+  case 'week':
+    start.setDate(end.getDate() - 6);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      keys.push(getDateKey(new Date(d)));
+    }
+    break;
       
-    case 'month':
-      start.setDate(1);
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        keys.push(getDateKey(new Date(d)));
-      }
-      break;
+  case 'month':
+    start.setDate(1);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      keys.push(getDateKey(new Date(d)));
+    }
+    break;
       
-    case 'quarter':
-      const quarterStart = Math.floor(end.getMonth() / 3) * 3;
-      start.setMonth(quarterStart, 1);
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        keys.push(getDateKey(new Date(d)));
-      }
-      break;
+  case 'quarter':
+    const quarterStart = Math.floor(end.getMonth() / 3) * 3;
+    start.setMonth(quarterStart, 1);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      keys.push(getDateKey(new Date(d)));
+    }
+    break;
       
-    case 'year':
-      start.setMonth(0, 1);
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        keys.push(getDateKey(new Date(d)));
-      }
-      break;
+  case 'year':
+    start.setMonth(0, 1);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      keys.push(getDateKey(new Date(d)));
+    }
+    break;
   }
   
   return keys;

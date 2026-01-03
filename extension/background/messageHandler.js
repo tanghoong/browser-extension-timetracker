@@ -14,41 +14,41 @@ async function handleMessage(message, sender) {
 
   try {
     switch (type) {
-      case MESSAGE_TYPES.GET_SUMMARY:
-        return await getSummary(payload);
+    case MESSAGE_TYPES.GET_SUMMARY:
+      return await getSummary(payload);
       
-      case MESSAGE_TYPES.GET_SERIES:
-        return await getSeries(payload);
+    case MESSAGE_TYPES.GET_SERIES:
+      return await getSeries(payload);
       
-      case MESSAGE_TYPES.GET_CURRENT_SESSION:
-        return await getCurrentSession();
+    case MESSAGE_TYPES.GET_CURRENT_SESSION:
+      return await getCurrentSession();
       
-      case MESSAGE_TYPES.EXPORT_CSV:
-        return await exportCSV(payload);
+    case MESSAGE_TYPES.EXPORT_CSV:
+      return await exportCSV(payload);
       
-      case MESSAGE_TYPES.GET_RULES:
-        return await getRules();
+    case MESSAGE_TYPES.GET_RULES:
+      return await getRules();
       
-      case MESSAGE_TYPES.ADD_RULE:
-        return await addRule(payload);
+    case MESSAGE_TYPES.ADD_RULE:
+      return await addRule(payload);
       
-      case MESSAGE_TYPES.UPDATE_RULE:
-        return await updateRule(payload);
+    case MESSAGE_TYPES.UPDATE_RULE:
+      return await updateRule(payload);
       
-      case MESSAGE_TYPES.REMOVE_RULE:
-        return await removeRule(payload);
+    case MESSAGE_TYPES.REMOVE_RULE:
+      return await removeRule(payload);
       
-      case MESSAGE_TYPES.GET_SETTINGS:
-        return await getSettings();
+    case MESSAGE_TYPES.GET_SETTINGS:
+      return await getSettings();
       
-      case MESSAGE_TYPES.UPDATE_SETTINGS:
-        return await updateSettings(payload);
+    case MESSAGE_TYPES.UPDATE_SETTINGS:
+      return await updateSettings(payload);
       
-      case MESSAGE_TYPES.CLEAR_DATA:
-        return await clearData(payload);
+    case MESSAGE_TYPES.CLEAR_DATA:
+      return await clearData(payload);
       
-      default:
-        return { error: 'Unknown message type' };
+    default:
+      return { error: 'Unknown message type' };
     }
   } catch (error) {
     console.error('Message handler error:', error);
