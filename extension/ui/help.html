@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help - Time Tracker</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .content { padding: 20px; }
+    .content h2 { margin-top: 24px; margin-bottom: 12px; font-size: 18px; }
+    .content h3 { margin-top: 16px; margin-bottom: 8px; font-size: 16px; }
+    .content p { margin-bottom: 12px; line-height: 1.6; }
+    .content ul { margin-left: 24px; margin-bottom: 12px; }
+    .content li { margin-bottom: 8px; }
+    .content code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Time Tracker</h1>
+      <div class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="settings.html">Settings</a>
+        <a href="help.html" class="active">Help</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <h2>How It Works</h2>
+      <p>Time Tracker monitors your browsing activity and records time spent on websites you choose to track.</p>
+      
+      <h3>Time Tracking Rules</h3>
+      <p>Time is counted only when ALL of these are true:</p>
+      <ul>
+        <li>The tab with a tracked website is active (selected)</li>
+        <li>The browser window is focused</li>
+        <li>You are not idle (no mouse/keyboard inactivity)</li>
+      </ul>
+
+      <h3>Visit Counting</h3>
+      <p>A visit is counted when:</p>
+      <ul>
+        <li>You navigate to a tracked site from a non-tracked site</li>
+        <li>You return to a tracked tab after 30+ seconds of inactivity</li>
+      </ul>
+
+      <h2>Privacy</h2>
+      <p><strong>100% Local Storage:</strong> All your data stays on your device. Nothing is uploaded to external servers.</p>
+      <p><strong>No Tracking:</strong> We don't collect any information about your browsing habits.</p>
+      <p><strong>Open Source:</strong> The code is available for inspection on GitHub.</p>
+
+      <h2>FAQs</h2>
+      
+      <h3>Why is my tracked time less than expected?</h3>
+      <p>The extension only counts time when the tab is active and focused. If you switch tabs, minimize the window, or become idle, tracking pauses.</p>
+
+      <h3>How do I add a website to track?</h3>
+      <p>Go to Settings → enter the domain (e.g., <code>youtube.com</code>) → click Add Site.</p>
+
+      <h3>Can I track incognito/private browsing?</h3>
+      <p>This depends on your browser settings. You may need to enable the extension in incognito mode.</p>
+
+      <h3>How do I export my data?</h3>
+      <p>In the Dashboard, select your time period and optional site filter, then click "Export CSV".</p>
+
+      <h3>Does this slow down my browser?</h3>
+      <p>No. The extension uses minimal resources (&lt;1% CPU, &lt;50MB memory).</p>
+
+      <h2>Support</h2>
+      <p>For bugs or feature requests, visit our GitHub repository.</p>
+      <p><strong>Version:</strong> 1.0.0</p>
+    </div>
+  </div>
+</body>
+</html>

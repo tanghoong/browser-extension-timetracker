@@ -3,10 +3,9 @@
  * Handles tab/window/idle events and time accumulation
  */
 
-import { TRACKING_CONFIG, STORAGE_KEYS, MESSAGE_TYPES } from '../lib/constants.js';
-import { getDateKey } from '../lib/utils.js';
+import { TRACKING_CONFIG } from '../lib/constants.js';
 import { saveSession, getCurrentSession, saveCurrentSession, getSettings } from './storage.js';
-import { matchURL, getRules } from './rules.js';
+import { initMessageHandler } from './messageHandler.js';
 
 // Current session state
 let currentSession = null;
@@ -19,6 +18,9 @@ let lastFlushTime = Date.now();
  */
 export async function initTracker() {
   console.log('Time Tracker: Initializing tracking engine');
+  
+  // Initialize message handler for UI communication
+  initMessageHandler();
   
   // Restore session state if exists
   currentSession = await getCurrentSession();
@@ -156,25 +158,32 @@ async function updateTrackingForTab(tab) {
   // Skip special URLs
   if (tab.url.startsWith('chrome://') || 
       tab.url.startsWith('about:') ||
-      tab.url.startsWith('edge://')) {
+      tab.url.startsWith('edge://') ||
+      tab.url.startsWith('chrome-extension://')) {
     await stopCurrentSession();
     return;
   }
   
-  // Check if URL matches any rules
-  const match = await matchURL(tab.url);
+  // Extract domain from URL (auto-track everything)
+  let siteKey;
+  try {
+    const urlObj = new URL(tab.url);
+    siteKey = urlObj.hostname.replace(/^www\./, '');
+  } catch (e) {
+    await stopCurrentSession();
+    return;
+  }
   
-  if (!match) {
-    // Not tracking this URL
+  if (!siteKey) {
     await stopCurrentSession();
     return;
   }
   
   // Check if we should count this as a new visit
-  const shouldCountVisit = await checkVisitThreshold(match.siteKey);
+  const shouldCountVisit = await checkVisitThreshold(siteKey);
   
   // Start or update session
-  await startSession(tab.id, match.siteKey, match.rule, shouldCountVisit);
+  await startSession(tab.id, siteKey, null, shouldCountVisit);
 }
 
 /**
@@ -386,3 +395,6 @@ export function getCurrentTrackingState() {
     startTime: currentSession.startTs
   };
 }
+
+// Initialize on load
+initTracker();

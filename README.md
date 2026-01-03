@@ -38,10 +38,10 @@ Time Tracker helps you understand where your time goes online. Get accurate insi
 - **Local Storage** - All data stays on your device, never uploaded
 
 ### Customization
-- **Flexible Rules** - Track by domain, exact host, or URL prefix
-- **Subdomain Control** - Include or exclude subdomains as needed
-- **Enable/Disable** - Temporarily disable tracking for specific sites
+- **Auto-Track Everything** - All websites tracked automatically by domain
+- **Exclude Sites** - Optionally exclude specific domains from tracking
 - **Smart Notifications** - Get alerts when you hit time limits you set
+- **Privacy Controls** - Easy data management and export options
 
 ## 🔒 Privacy First
 
@@ -106,21 +106,21 @@ We take privacy seriously:
 
 1. **Install the extension** following the instructions above
 
-2. **Add websites to track:**
-   - Click the extension icon in your browser toolbar
-   - Go to Settings
-   - Click "Add Site"
-   - Enter a domain (e.g., `youtube.com`, `reddit.com`)
-   - Choose whether to include subdomains
-   - Click "Save"
+2. **Start browsing** - The extension automatically tracks all websites you visit
+   - No setup required!
+   - Every website is tracked by domain (e.g., `youtube.com`, `github.com`)
+   - Time is counted only when tab is active and you're not idle
 
-3. **Browse normally** - The extension tracks automatically
-
-4. **View your stats:**
+3. **View your stats:**
    - Click the extension icon to open the dashboard
    - See your time and visits for different periods
    - Use the period selector to change timeframes
    - Filter by specific sites or view all together
+
+4. **Optional - Exclude specific sites:**
+   - Go to Settings
+   - Find the site you want to exclude
+   - Click "Exclude" to stop tracking that domain
 
 ### Understanding Tracking
 
@@ -300,9 +300,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Built with [webextension-polyfill](https://github.com/mozilla/webextension-polyfill) for cross-browser compatibility
-- Charts powered by [Chart.js](https://www.chartjs.org/) (optional)
-- Icons from [your icon source]
+- Built with native Chrome Extension APIs (Manifest V3)
+- Charts rendered with HTML5 Canvas for zero dependencies
+- Icons from browser-native resources
 - Inspired by the need for privacy-respecting productivity tools
 
 ## 📞 Support

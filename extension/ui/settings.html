@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Time Tracker</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Time Tracker</h1>
+      <div class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="settings.html" class="active">Settings</a>
+        <a href="help.html">Help</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <section>
+        <h2>Tracked Sites</h2>
+        <p class="info-text">
+          All websites are automatically tracked. You can exclude specific sites from tracking below.
+        </p>
+        <div id="sitesList" class="sites-list"></div>
+      </section>
+
+      <section>
+        <h2>Data Management</h2>
+        <div class="button-group">
+          <button id="clearTodayBtn">Clear Today</button>
+          <button id="clear7DaysBtn">Clear Last 7 Days</button>
+          <button id="clearAllBtn" class="danger">Clear All Data</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="settings.js" type="module"></script>
+</body>
+</html>
