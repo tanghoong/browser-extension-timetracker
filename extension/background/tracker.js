@@ -3,7 +3,7 @@
  * Handles tab/window/idle events and time accumulation
  */
 
-import { TRACKING_CONFIG } from '../lib/constants.js';
+import { TRACKING_CONFIG, MESSAGE_TYPES } from '../lib/constants.js';
 import { saveSession, getCurrentSession, saveCurrentSession, getSettings } from './storage.js';
 import { initMessageHandler } from './messageHandler.js';
 
@@ -228,7 +228,7 @@ async function startSession(tabId, siteKey, rule, countVisit = false) {
   currentSession = {
     tabId,
     siteKey,
-    ruleId: rule.id,
+    ruleId: rule?.id || null,
     startTs: now,
     lastTickTs: now,
     isCounting: true,
@@ -343,13 +343,17 @@ async function flushPendingData() {
   }
   
   try {
+    const siteKey = currentSession.siteKey;
+    const seconds = pendingFlush.seconds;
+    const visits = pendingFlush.visits;
+    
     await saveSession(
-      currentSession.siteKey,
-      pendingFlush.seconds,
-      pendingFlush.visits
+      siteKey,
+      seconds,
+      visits
     );
     
-    console.log(`Time Tracker: Flushed ${pendingFlush.seconds}s, ${pendingFlush.visits} visits for ${currentSession.siteKey}`);
+    console.log(`Time Tracker: Flushed ${seconds}s, ${visits} visits for ${siteKey}`);
     
     // Reset pending data
     pendingFlush = { seconds: 0, visits: 0 };

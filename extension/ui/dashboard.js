@@ -15,7 +15,7 @@ async function init() {
   // Listen for tracking updates
   chrome.runtime.onMessage.addListener((message) => {
     if (message.type === MESSAGE_TYPES.TRACKING_UPDATE) {
-      updateCurrentSession(message.payload);
+      updateCurrentSession(message.state || message);
     }
   });
   
@@ -54,17 +54,21 @@ async function loadData() {
       sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: currentPeriod, siteKey: currentSite })
     ]);
     
-    // Update summary cards
-    updateSummaryCard('today', dayData.payload.sites);
-    updateSummaryCard('week', weekData.payload.sites);
-    updateSummaryCard('month', monthData.payload.sites);
+    // Update summary cards - response format is { summary: { sites: {...} } }
+    const daySites = dayData?.summary?.sites || {};
+    const weekSites = weekData?.summary?.sites || {};
+    const monthSites = monthData?.summary?.sites || {};
+    
+    updateSummaryCard('today', daySites);
+    updateSummaryCard('week', weekSites);
+    updateSummaryCard('month', monthSites);
     
     // Update site filter
-    updateSiteFilter(dayData.payload.sites);
+    updateSiteFilter(daySites);
     
     // Get series data for chart
     const seriesData = await sendMessage(MESSAGE_TYPES.GET_SERIES, { period: currentPeriod, siteKey: currentSite });
-    updateChart(seriesData.payload);
+    updateChart(seriesData?.series || []);
   } catch (error) {
     console.error('Error loading data:', error);
   }
@@ -107,7 +111,7 @@ function updateSiteFilter(sites) {
 async function loadCurrentSession() {
   try {
     const response = await sendMessage(MESSAGE_TYPES.GET_CURRENT_SESSION, {});
-    updateCurrentSession(response.payload);
+    updateCurrentSession(response?.state);
   } catch (error) {
     console.error('Error loading current session:', error);
   }
@@ -115,8 +119,9 @@ async function loadCurrentSession() {
 
 function updateCurrentSession(session) {
   const statusEl = document.getElementById('sessionStatus');
+  if (!statusEl) return;
   
-  if (!session || !session.isActive) {
+  if (!session?.isActive) {
     statusEl.textContent = 'Not tracking';
     statusEl.className = '';
   } else {
@@ -172,7 +177,7 @@ async function exportData() {
       siteKey: currentSite 
     });
     
-    const csv = response.payload.csv;
+    const csv = response?.csv || '';
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

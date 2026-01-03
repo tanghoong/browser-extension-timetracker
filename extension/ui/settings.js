@@ -20,7 +20,7 @@ function setupEventListeners() {
 async function loadSettings() {
   try {
     const response = await sendMessage(MESSAGE_TYPES.GET_SETTINGS, {});
-    excludedSites = new Set(response.payload?.excludedSites || []);
+    excludedSites = new Set(response?.settings?.excludedSites || []);
   } catch (error) {
     console.error('Error loading settings:', error);
   }
@@ -29,8 +29,8 @@ async function loadSettings() {
 async function loadSites() {
   try {
     const response = await sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: 'year' });
-    if (response.payload?.sites) {
-      allSites = Object.keys(response.payload.sites).sort();
+    if (response?.summary?.sites) {
+      allSites = Object.keys(response.summary.sites).sort();
       displaySites();
     }
   } catch (error) {
