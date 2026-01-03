@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Time Tracker - Website Usage Monitor",
+  "version": "1.0.0",
+  "description": "Track time spent and visits on websites. Privacy-first, local-only storage, no external servers.",
+  
+  "permissions": [
+    "storage",
+    "tabs",
+    "notifications",
+    "idle",
+    "alarms"
+  ],
+  
+  "background": {
+    "service_worker": "background/tracker.js",
+    "type": "module"
+  },
+  
+  "action": {
+    "default_popup": "ui/dashboard.html",
+    "default_title": "Time Tracker",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    }
+  },
+  
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
