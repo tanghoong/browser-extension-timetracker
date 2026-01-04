@@ -1,5 +1,5 @@
-import { MESSAGE_TYPES, TIME_PERIODS } from '../lib/constants.js';
-import { formatTime, formatTimeHMS } from '../lib/utils.js';
+import { MESSAGE_TYPES } from '../lib/constants.js';
+import { formatTime } from '../lib/utils.js';
 
 let currentPeriod = 'day';
 let currentSite = null;
@@ -47,11 +47,10 @@ function setupEventListeners() {
 async function loadData() {
   try {
     // Get summary for all periods
-    const [dayData, weekData, monthData, periodData] = await Promise.all([
+    const [dayData, weekData, monthData] = await Promise.all([
       sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: 'day' }),
       sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: 'week' }),
-      sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: 'month' }),
-      sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: currentPeriod, siteKey: currentSite })
+      sendMessage(MESSAGE_TYPES.GET_SUMMARY, { period: 'month' })
     ]);
     
     // Update summary cards - response format is { summary: { sites: {...} } }
@@ -91,8 +90,10 @@ function updateSiteFilter(sites) {
   const filter = document.getElementById('siteFilter');
   const currentValue = filter.value;
   
-  // Keep first option (All Sites)
-  filter.innerHTML = '<option value="">All Sites</option>';
+  // Clear all options except the first one (All Sites)
+  while (filter.options.length > 1) {
+    filter.options.remove(1);
+  }
   
   // Add sites sorted by time
   const siteList = Object.entries(sites)
@@ -105,7 +106,10 @@ function updateSiteFilter(sites) {
     filter.appendChild(option);
   }
   
-  filter.value = currentValue;
+  // Restore previous selection if still valid
+  if (currentValue && Array.from(filter.options).some(opt => opt.value === currentValue)) {
+    filter.value = currentValue;
+  }
 }
 
 async function loadCurrentSession() {

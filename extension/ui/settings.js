@@ -42,29 +42,52 @@ function displaySites() {
   const container = document.getElementById('sitesList');
   
   if (allSites.length === 0) {
-    container.innerHTML = '<p class="empty">No sites visited yet. Browse some websites to see them here.</p>';
+    // Safely create empty message element
+    container.innerHTML = '';
+    const emptyMsg = document.createElement('p');
+    emptyMsg.className = 'empty';
+    emptyMsg.textContent = 'No sites visited yet. Browse some websites to see them here.';
+    container.appendChild(emptyMsg);
     return;
   }
   
-  container.innerHTML = allSites.map(site => {
-    const isExcluded = excludedSites.has(site);
-    return `
-      <div class="site-item ${isExcluded ? 'excluded' : ''}">
-        <div class="site-info">
-          <strong>${site}</strong>
-          ${isExcluded ? '<span class="badge excluded">Excluded</span>' : ''}
-        </div>
-        <div class="site-actions">
-          <button class="exclude-btn" data-site="${site}">
-            ${isExcluded ? 'Include' : 'Exclude'}
-          </button>
-        </div>
-      </div>
-    `;
-  }).join('');
+  // Clear container first
+  container.innerHTML = '';
   
-  container.querySelectorAll('.exclude-btn').forEach(btn => {
-    btn.addEventListener('click', () => toggleExclude(btn.dataset.site));
+  allSites.forEach(site => {
+    const isExcluded = excludedSites.has(site);
+    
+    // Create elements safely to prevent XSS
+    const siteItem = document.createElement('div');
+    siteItem.className = `site-item ${isExcluded ? 'excluded' : ''}`;
+    
+    const siteInfo = document.createElement('div');
+    siteInfo.className = 'site-info';
+    
+    const siteName = document.createElement('strong');
+    siteName.textContent = site; // Safe text insertion
+    siteInfo.appendChild(siteName);
+    
+    if (isExcluded) {
+      const badge = document.createElement('span');
+      badge.className = 'badge excluded';
+      badge.textContent = 'Excluded';
+      siteInfo.appendChild(badge);
+    }
+    
+    const siteActions = document.createElement('div');
+    siteActions.className = 'site-actions';
+    
+    const btn = document.createElement('button');
+    btn.className = 'exclude-btn';
+    btn.textContent = isExcluded ? 'Include' : 'Exclude';
+    btn.dataset.site = site;
+    btn.addEventListener('click', () => toggleExclude(site));
+    siteActions.appendChild(btn);
+    
+    siteItem.appendChild(siteInfo);
+    siteItem.appendChild(siteActions);
+    container.appendChild(siteItem);
   });
 }
 

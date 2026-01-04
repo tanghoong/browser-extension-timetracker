@@ -147,57 +147,57 @@ export async function matchURL(url, rules = null) {
     let siteKey = null;
     
     switch (rule.type) {
-      case RULE_TYPES.DOMAIN: {
-        const ruleDomain = rule.value.toLowerCase();
-        const etld = getETLDPlusOne(hostname);
+    case RULE_TYPES.DOMAIN: {
+      const ruleDomain = rule.value.toLowerCase();
+      const etld = getETLDPlusOne(hostname);
         
-        if (rule.includeSubdomains) {
-          // Match domain and all subdomains
-          matched = hostname === ruleDomain || 
+      if (rule.includeSubdomains) {
+        // Match domain and all subdomains
+        matched = hostname === ruleDomain || 
                    hostname.endsWith(`.${ruleDomain}`) ||
                    etld === ruleDomain;
-        } else {
-          // Exact domain match only
-          matched = hostname === ruleDomain;
-        }
+      } else {
+        // Exact domain match only
+        matched = hostname === ruleDomain;
+      }
         
-        if (matched) {
-          siteKey = ruleDomain;
-        }
-        break;
+      if (matched) {
+        siteKey = ruleDomain;
       }
+      break;
+    }
       
-      case RULE_TYPES.EXACT_HOST: {
-        const ruleHost = rule.value.toLowerCase();
-        matched = hostname === ruleHost;
-        if (matched) {
-          siteKey = ruleHost;
-        }
-        break;
+    case RULE_TYPES.EXACT_HOST: {
+      const ruleHost = rule.value.toLowerCase();
+      matched = hostname === ruleHost;
+      if (matched) {
+        siteKey = ruleHost;
       }
+      break;
+    }
       
-      case RULE_TYPES.URL_PREFIX: {
-        const rulePrefix = rule.value.toLowerCase();
-        matched = url.toLowerCase().startsWith(rulePrefix);
+    case RULE_TYPES.URL_PREFIX: {
+      const rulePrefix = rule.value.toLowerCase();
+      matched = url.toLowerCase().startsWith(rulePrefix);
+      if (matched) {
+        siteKey = hostname;
+      }
+      break;
+    }
+      
+    case RULE_TYPES.REGEX: {
+      try {
+        const regex = new RegExp(rule.value, 'i');
+        matched = regex.test(url);
         if (matched) {
           siteKey = hostname;
         }
-        break;
+      } catch (e) {
+        // Invalid regex, skip
+        console.error('Invalid regex in rule:', rule.id, e);
       }
-      
-      case RULE_TYPES.REGEX: {
-        try {
-          const regex = new RegExp(rule.value, 'i');
-          matched = regex.test(url);
-          if (matched) {
-            siteKey = hostname;
-          }
-        } catch (e) {
-          // Invalid regex, skip
-          console.error('Invalid regex in rule:', rule.id, e);
-        }
-        break;
-      }
+      break;
+    }
     }
     
     if (matched) {

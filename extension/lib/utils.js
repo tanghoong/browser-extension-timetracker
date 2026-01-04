@@ -3,11 +3,8 @@
  */
 
 import {
-  MS_PER_SECOND,
   SECONDS_PER_MINUTE,
   MINUTES_PER_HOUR,
-  HOURS_PER_DAY,
-  DAYS_PER_WEEK,
 } from './constants.js';
 
 /**
@@ -94,38 +91,39 @@ export function getDateKeysForPeriod(period, endDate = new Date()) {
   let start = new Date(end);
   
   switch (period) {
-    case 'day':
-      keys.push(getDateKey(end));
-      break;
+  case 'day':
+    keys.push(getDateKey(end));
+    break;
       
-    case 'week':
-      start.setDate(end.getDate() - 6);
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        keys.push(getDateKey(new Date(d)));
-      }
-      break;
+  case 'week':
+    start.setDate(end.getDate() - 6);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      keys.push(getDateKey(new Date(d)));
+    }
+    break;
       
-    case 'month':
-      start.setDate(1);
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        keys.push(getDateKey(new Date(d)));
-      }
-      break;
+  case 'month':
+    start.setDate(1);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      keys.push(getDateKey(new Date(d)));
+    }
+    break;
       
-    case 'quarter':
-      const quarterStart = Math.floor(end.getMonth() / 3) * 3;
-      start.setMonth(quarterStart, 1);
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        keys.push(getDateKey(new Date(d)));
-      }
-      break;
+  case 'quarter': {
+    const quarterStart = Math.floor(end.getMonth() / 3) * 3;
+    start.setMonth(quarterStart, 1);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      keys.push(getDateKey(new Date(d)));
+    }
+    break;
+  }
       
-    case 'year':
-      start.setMonth(0, 1);
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        keys.push(getDateKey(new Date(d)));
-      }
-      break;
+  case 'year':
+    start.setMonth(0, 1);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      keys.push(getDateKey(new Date(d)));
+    }
+    break;
   }
   
   return keys;
@@ -164,6 +162,47 @@ export function getETLDPlusOne(hostname) {
   // Simple implementation - just get last two parts
   // For production, consider using a proper public suffix list
   return parts.slice(-2).join('.');
+}
+
+/**
+ * Escape a value for safe use in CSV
+ * Prevents CSV injection attacks
+ * @param {string} value - Value to escape
+ * @returns {string} Escaped value
+ */
+export function escapeCSV(value) {
+  if (value == null) return '';
+  
+  const str = String(value);
+  
+  // Determine if the value starts with a potentially dangerous character
+  // Excel/LibreOffice treat cells starting with =, +, -, @ as formulas
+  const startsWithDanger = /^[=+\-@]/.test(str);
+  
+  // Determine if the value needs quoting in CSV (comma, quote, or newline)
+  const needsQuoting = str.includes(',') || str.includes('"') || str.includes('\n');
+  
+  let sanitized;
+  
+  if (startsWithDanger) {
+    if (needsQuoting) {
+      // For values that need quoting, prefix with a tab character inside the quotes
+      // to prevent formula execution while keeping valid CSV
+      sanitized = '\t' + str;
+    } else {
+      // For unquoted values, prefix with a single quote to prevent formula execution
+      sanitized = '\'' + str;
+    }
+  } else {
+    sanitized = str;
+  }
+  
+  // If contains comma, quote, or newline, wrap in quotes and escape internal quotes
+  if (needsQuoting) {
+    return `"${sanitized.replace(/"/g, '""')}"`;
+  }
+  
+  return sanitized;
 }
 
 /**
