@@ -175,13 +175,30 @@ export function escapeCSV(value) {
   
   const str = String(value);
   
-  // Remove potentially dangerous characters that could trigger formula execution
+  // Determine if the value starts with a potentially dangerous character
   // Excel/LibreOffice treat cells starting with =, +, -, @ as formulas
-  // Prefix with single quote to prevent formula execution
-  const sanitized = str.replace(/^[=+\-@]/, '\'$&');
+  const startsWithDanger = /^[=+\-@]/.test(str);
+  
+  // Determine if the value needs quoting in CSV (comma, quote, or newline)
+  const needsQuoting = str.includes(',') || str.includes('"') || str.includes('\n');
+  
+  let sanitized;
+  
+  if (startsWithDanger) {
+    if (needsQuoting) {
+      // For values that need quoting, prefix with a tab character inside the quotes
+      // to prevent formula execution while keeping valid CSV
+      sanitized = '\t' + str;
+    } else {
+      // For unquoted values, prefix with a single quote to prevent formula execution
+      sanitized = '\'' + str;
+    }
+  } else {
+    sanitized = str;
+  }
   
   // If contains comma, quote, or newline, wrap in quotes and escape internal quotes
-  if (sanitized.includes(',') || sanitized.includes('"') || sanitized.includes('\n')) {
+  if (needsQuoting) {
     return `"${sanitized.replace(/"/g, '""')}"`;
   }
   
