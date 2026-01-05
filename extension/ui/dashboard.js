@@ -138,9 +138,9 @@ function updateChart(series) {
   const canvas = document.getElementById('chart');
   const ctx = canvas.getContext('2d');
   
-  // Simple bar chart
+  // Set canvas dimensions
   canvas.width = canvas.offsetWidth;
-  canvas.height = 200;
+  canvas.height = 300; // Increased height for better visibility
   
   if (!series || series.length === 0) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -153,25 +153,195 @@ function updateChart(series) {
   
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
+  // Check if we have site-level data for stacking
+  const hasStacking = series.some(point => point.sites && Object.keys(point.sites).length > 0);
+  
+  if (hasStacking && !currentSite) {
+    // Render stacked bar chart with top 3 sites + Others
+    renderStackedChart(ctx, canvas, series);
+  } else {
+    // Render simple bar chart (for single site or when no site data available)
+    renderSimpleChart(ctx, canvas, series);
+  }
+}
+
+function renderSimpleChart(ctx, canvas, series) {
+  const BAR_SPACING = 4;
+  const MAX_BAR_WIDTH = 60;
+  const BOTTOM_MARGIN = 50;
+  
   const maxSeconds = Math.max(...series.map(s => s.seconds), 1);
-  const barWidth = canvas.width / series.length - 4;
-  const maxBarHeight = canvas.height - 30;
+  const barWidth = Math.min(canvas.width / series.length - BAR_SPACING, MAX_BAR_WIDTH);
+  const maxBarHeight = canvas.height - BOTTOM_MARGIN;
   
   series.forEach((point, i) => {
     const barHeight = (point.seconds / maxSeconds) * maxBarHeight;
-    const x = i * (barWidth + 4);
-    const y = canvas.height - barHeight - 20;
+    const x = i * (barWidth + BAR_SPACING);
+    const y = canvas.height - barHeight - BOTTOM_MARGIN;
     
     ctx.fillStyle = '#4CAF50';
     ctx.fillRect(x, y, barWidth, barHeight);
     
-    // Label
-    ctx.fillStyle = '#333';
+    // Numeric indicator on top of bar
+    if (point.seconds > 0) {
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(formatTime(point.seconds), x + barWidth / 2, y - 5);
+    }
+    
+    // Date label
+    ctx.fillStyle = '#666';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
     const label = point.date.split('-').slice(1).join('/');
-    ctx.fillText(label, x + barWidth / 2, canvas.height - 5);
+    ctx.fillText(label, x + barWidth / 2, canvas.height - 15);
   });
+}
+
+function renderStackedChart(ctx, canvas, series) {
+  // Constants
+  const COLORS = ['#2196F3', '#4CAF50', '#FF9800', '#9E9E9E'];
+  const BAR_SPACING = 8;
+  const MAX_BAR_WIDTH = 60;
+  const BOTTOM_MARGIN = 60;
+  const MIN_SEGMENT_HEIGHT_FOR_LABEL = 20;
+  const LEGEND_MARGIN = 10;
+  const MAX_SITE_NAME_LENGTH = 15;
+  const TRUNCATED_SITE_NAME_LENGTH = 12;
+  
+  const barWidth = Math.min(canvas.width / series.length - BAR_SPACING, MAX_BAR_WIDTH);
+  const maxBarHeight = canvas.height - BOTTOM_MARGIN;
+  
+  // Find top 3 sites across all dates
+  const siteSeconds = {};
+  series.forEach(point => {
+    if (point.sites) {
+      Object.entries(point.sites).forEach(([site, data]) => {
+        siteSeconds[site] = (siteSeconds[site] || 0) + data.seconds;
+      });
+    }
+  });
+  
+  const topSites = Object.entries(siteSeconds)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([site]) => site);
+  
+  // Calculate max total seconds for scaling
+  const maxSeconds = Math.max(...series.map(point => point.seconds), 1);
+  
+  // Draw stacked bars
+  series.forEach((point, i) => {
+    if (!point.sites || Object.keys(point.sites).length === 0) return;
+    
+    const x = i * (barWidth + BAR_SPACING);
+    let currentY = canvas.height - BOTTOM_MARGIN;
+    
+    // Stack segments: top 3 sites + others
+    const segments = [];
+    let othersSeconds = 0;
+    
+    // Add top 3 sites
+    topSites.forEach(site => {
+      if (point.sites[site]) {
+        segments.push({
+          site: site,
+          seconds: point.sites[site].seconds,
+          isOther: false
+        });
+      }
+    });
+    
+    // Aggregate remaining sites as "Others"
+    Object.entries(point.sites).forEach(([site, data]) => {
+      if (!topSites.includes(site)) {
+        othersSeconds += data.seconds;
+      }
+    });
+    
+    if (othersSeconds > 0) {
+      segments.push({
+        site: 'Others',
+        seconds: othersSeconds,
+        isOther: true
+      });
+    }
+    
+    // Draw segments from bottom to top
+    segments.reverse().forEach((segment) => {
+      const segmentHeight = (segment.seconds / maxSeconds) * maxBarHeight;
+      currentY -= segmentHeight;
+      
+      // Safely get color index, defaulting to gray for Others
+      let colorIndex;
+      if (segment.isOther) {
+        colorIndex = 3;
+      } else {
+        colorIndex = topSites.indexOf(segment.site);
+        // Fallback to gray if site not found (should not happen)
+        if (colorIndex === -1) {
+          colorIndex = 3;
+        }
+      }
+      
+      ctx.fillStyle = COLORS[colorIndex];
+      ctx.fillRect(x, currentY, barWidth, segmentHeight);
+      
+      // Add numeric indicator if segment is tall enough
+      if (segmentHeight > MIN_SEGMENT_HEIGHT_FOR_LABEL) {
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(formatTime(segment.seconds), x + barWidth / 2, currentY + segmentHeight / 2 + 4);
+      }
+    });
+    
+    // Date label below bar
+    ctx.fillStyle = '#666';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'center';
+    const label = point.date.split('-').slice(1).join('/');
+    ctx.fillText(label, x + barWidth / 2, canvas.height - 25);
+    
+    // Total time above bar
+    if (point.seconds > 0) {
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(formatTime(point.seconds), x + barWidth / 2, currentY - 5);
+    }
+  });
+  
+  // Draw legend
+  const legendY = canvas.height - LEGEND_MARGIN + 8; // extra offset to avoid overlap with date labels
+  let legendX = LEGEND_MARGIN;
+  
+  topSites.forEach((site, index) => {
+    ctx.fillStyle = COLORS[index];
+    ctx.fillRect(legendX, legendY, 12, 12);
+    
+    ctx.fillStyle = '#333';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'left';
+    const siteName = site.length > MAX_SITE_NAME_LENGTH 
+      ? site.substring(0, TRUNCATED_SITE_NAME_LENGTH) + '...' 
+      : site;
+    ctx.fillText(siteName, legendX + 16, legendY + 10);
+    
+    legendX += ctx.measureText(siteName).width + 30;
+  });
+  
+  // Add "Others" to legend if there are more than 3 sites
+  if (Object.keys(siteSeconds).length > 3) {
+    ctx.fillStyle = COLORS[3];
+    ctx.fillRect(legendX, legendY, 12, 12);
+    
+    ctx.fillStyle = '#333';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Others', legendX + 16, legendY + 10);
+  }
 }
 
 async function exportData() {

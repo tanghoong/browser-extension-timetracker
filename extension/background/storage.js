@@ -114,7 +114,7 @@ export async function getSummary(period, siteKey = null, date = new Date()) {
  * Get time series data for charts
  * @param {string} period - Period type (day, week, month, quarter, year)
  * @param {string|null} siteKey - Specific site or null for all
- * @returns {Promise<Array>} Array of { date, seconds, visits }
+ * @returns {Promise<Array>} Array of { date, seconds, visits, sites?: { [key]: { seconds, visits } } }
  */
 export async function getSeries(period, siteKey = null) {
   const dateKeys = getDateKeysForPeriod(period);
@@ -131,6 +131,7 @@ export async function getSeries(period, siteKey = null) {
     
     let totalSeconds = 0;
     let totalVisits = 0;
+    const sitesData = {};
     
     if (dayStats && dayStats.sites) {
       for (const [site, data] of Object.entries(dayStats.sites)) {
@@ -138,14 +139,29 @@ export async function getSeries(period, siteKey = null) {
         
         totalSeconds += data.seconds || 0;
         totalVisits += data.visits || 0;
+        
+        // Include per-site breakdown when showing all sites
+        if (!siteKey) {
+          sitesData[site] = {
+            seconds: data.seconds || 0,
+            visits: data.visits || 0
+          };
+        }
       }
     }
     
-    series.push({
+    const dataPoint = {
       date: dateKey,
       seconds: totalSeconds,
       visits: totalVisits
-    });
+    };
+    
+    // Add site breakdown if showing all sites
+    if (!siteKey && Object.keys(sitesData).length > 0) {
+      dataPoint.sites = sitesData;
+    }
+    
+    series.push(dataPoint);
   }
   
   return series;
