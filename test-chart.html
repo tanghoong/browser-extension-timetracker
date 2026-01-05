@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chart Test - Updated</title>
+  <link rel="stylesheet" href="extension/ui/common.css">
+  <link rel="stylesheet" href="extension/ui/dashboard.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Time Tracker</h1>
+      <div class="nav">
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Settings</a>
+        <a href="#">Help</a>
+      </div>
+    </header>
+
+    <div class="current-session" id="currentSession">
+      <span id="sessionStatus">Not tracking</span>
+    </div>
+
+    <div class="summary-cards" id="summaryCards">
+      <div class="card">
+        <h3>Today</h3>
+        <div class="time" id="todayTime">2h 55m</div>
+        <div class="visits" id="todayVisits">24 visits</div>
+      </div>
+      <div class="card">
+        <h3>This Week</h3>
+        <div class="time" id="weekTime">23h 30m</div>
+        <div class="visits" id="weekVisits">162 visits</div>
+      </div>
+      <div class="card">
+        <h3>This Month</h3>
+        <div class="time" id="monthTime">23h 30m</div>
+        <div class="visits" id="monthVisits">162 visits</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="period-selector">
+        <button class="period-btn" data-period="day">Day</button>
+        <button class="period-btn active" data-period="week">Week</button>
+        <button class="period-btn" data-period="month">Month</button>
+      </div>
+      <select id="siteFilter">
+        <option value="">All Sites</option>
+      </select>
+      <button id="exportBtn">Export CSV</button>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <script type="module" src="extension/ui/dashboard.js"></script>
+</body>
+</html>

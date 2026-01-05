@@ -177,7 +177,7 @@ function renderSimpleChart(ctx, canvas, series) {
   series.forEach((point, i) => {
     const barHeight = (point.seconds / maxSeconds) * maxBarHeight;
     const x = i * (barWidth + BAR_SPACING);
-    const y = canvas.height - barHeight - 30;
+    const y = canvas.height - barHeight - BOTTOM_MARGIN;
     
     ctx.fillStyle = '#4CAF50';
     ctx.fillRect(x, y, barWidth, barHeight);
@@ -236,7 +236,7 @@ function renderStackedChart(ctx, canvas, series) {
     if (!point.sites || Object.keys(point.sites).length === 0) return;
     
     const x = i * (barWidth + BAR_SPACING);
-    let currentY = canvas.height - 40;
+    let currentY = canvas.height - BOTTOM_MARGIN;
     
     // Stack segments: top 3 sites + others
     const segments = [];
@@ -314,7 +314,7 @@ function renderStackedChart(ctx, canvas, series) {
   });
   
   // Draw legend
-  const legendY = canvas.height - LEGEND_MARGIN;
+  const legendY = canvas.height - LEGEND_MARGIN + 8; // extra offset to avoid overlap with date labels
   let legendX = LEGEND_MARGIN;
   
   topSites.forEach((site, index) => {
