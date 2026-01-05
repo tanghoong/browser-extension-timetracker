@@ -166,13 +166,17 @@ function updateChart(series) {
 }
 
 function renderSimpleChart(ctx, canvas, series) {
+  const BAR_SPACING = 4;
+  const MAX_BAR_WIDTH = 60;
+  const BOTTOM_MARGIN = 50;
+  
   const maxSeconds = Math.max(...series.map(s => s.seconds), 1);
-  const barWidth = Math.min(canvas.width / series.length - 4, 60);
-  const maxBarHeight = canvas.height - 50;
+  const barWidth = Math.min(canvas.width / series.length - BAR_SPACING, MAX_BAR_WIDTH);
+  const maxBarHeight = canvas.height - BOTTOM_MARGIN;
   
   series.forEach((point, i) => {
     const barHeight = (point.seconds / maxSeconds) * maxBarHeight;
-    const x = i * (barWidth + 4);
+    const x = i * (barWidth + BAR_SPACING);
     const y = canvas.height - barHeight - 30;
     
     ctx.fillStyle = '#4CAF50';
@@ -196,10 +200,18 @@ function renderSimpleChart(ctx, canvas, series) {
 }
 
 function renderStackedChart(ctx, canvas, series) {
-  // Colors for top 3 sites + Others
-  const colors = ['#2196F3', '#4CAF50', '#FF9800', '#9E9E9E'];
-  const barWidth = Math.min(canvas.width / series.length - 8, 60);
-  const maxBarHeight = canvas.height - 60;
+  // Constants
+  const COLORS = ['#2196F3', '#4CAF50', '#FF9800', '#9E9E9E'];
+  const BAR_SPACING = 8;
+  const MAX_BAR_WIDTH = 60;
+  const BOTTOM_MARGIN = 60;
+  const MIN_SEGMENT_HEIGHT_FOR_LABEL = 20;
+  const LEGEND_MARGIN = 10;
+  const MAX_SITE_NAME_LENGTH = 15;
+  const TRUNCATED_SITE_NAME_LENGTH = 12;
+  
+  const barWidth = Math.min(canvas.width / series.length - BAR_SPACING, MAX_BAR_WIDTH);
+  const maxBarHeight = canvas.height - BOTTOM_MARGIN;
   
   // Find top 3 sites across all dates
   const siteSeconds = {};
@@ -223,7 +235,7 @@ function renderStackedChart(ctx, canvas, series) {
   series.forEach((point, i) => {
     if (!point.sites || Object.keys(point.sites).length === 0) return;
     
-    const x = i * (barWidth + 8);
+    const x = i * (barWidth + BAR_SPACING);
     let currentY = canvas.height - 40;
     
     // Stack segments: top 3 sites + others
@@ -261,12 +273,23 @@ function renderStackedChart(ctx, canvas, series) {
       const segmentHeight = (segment.seconds / maxSeconds) * maxBarHeight;
       currentY -= segmentHeight;
       
-      const colorIndex = segment.isOther ? 3 : topSites.indexOf(segment.site);
-      ctx.fillStyle = colors[colorIndex];
+      // Safely get color index, defaulting to gray for Others
+      let colorIndex;
+      if (segment.isOther) {
+        colorIndex = 3;
+      } else {
+        colorIndex = topSites.indexOf(segment.site);
+        // Fallback to gray if site not found (should not happen)
+        if (colorIndex === -1) {
+          colorIndex = 3;
+        }
+      }
+      
+      ctx.fillStyle = COLORS[colorIndex];
       ctx.fillRect(x, currentY, barWidth, segmentHeight);
       
       // Add numeric indicator if segment is tall enough
-      if (segmentHeight > 20) {
+      if (segmentHeight > MIN_SEGMENT_HEIGHT_FOR_LABEL) {
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'center';
@@ -291,17 +314,19 @@ function renderStackedChart(ctx, canvas, series) {
   });
   
   // Draw legend
-  const legendY = canvas.height - 10;
-  let legendX = 10;
+  const legendY = canvas.height - LEGEND_MARGIN;
+  let legendX = LEGEND_MARGIN;
   
   topSites.forEach((site, index) => {
-    ctx.fillStyle = colors[index];
+    ctx.fillStyle = COLORS[index];
     ctx.fillRect(legendX, legendY, 12, 12);
     
     ctx.fillStyle = '#333';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'left';
-    const siteName = site.length > 15 ? site.substring(0, 12) + '...' : site;
+    const siteName = site.length > MAX_SITE_NAME_LENGTH 
+      ? site.substring(0, TRUNCATED_SITE_NAME_LENGTH) + '...' 
+      : site;
     ctx.fillText(siteName, legendX + 16, legendY + 10);
     
     legendX += ctx.measureText(siteName).width + 30;
@@ -309,7 +334,7 @@ function renderStackedChart(ctx, canvas, series) {
   
   // Add "Others" to legend if there are more than 3 sites
   if (Object.keys(siteSeconds).length > 3) {
-    ctx.fillStyle = colors[3];
+    ctx.fillStyle = COLORS[3];
     ctx.fillRect(legendX, legendY, 12, 12);
     
     ctx.fillStyle = '#333';
